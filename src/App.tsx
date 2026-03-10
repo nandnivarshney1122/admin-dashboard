@@ -16,6 +16,9 @@ import NotFound from "./pages/NotFound";
 import ExamResults from "./pages/ExamResults";
 import Timetable from "./pages/Timetable";
 import AITimetableGenerator from "./pages/AITimetableGenerator";
+import Classes from "./pages/Classes";
+import Subjects from "./pages/Subjects";
+import Reports from "./pages/Reports";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -57,6 +60,9 @@ const App = () => (
             <Route path="/requests" element={<Requests />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/results" element={<ExamResults />} />
+            <Route path="/classes" element={<Classes />} />
+            <Route path="/subjects" element={<Subjects />} />
+            <Route path="/reports" element={<Reports />} />
             <Route path="/timetable" element={<Timetable />} />
             <Route path="/timetable/generator" element={<AITimetableGenerator />} />
           </Route>

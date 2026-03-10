@@ -37,12 +37,16 @@ function dayLabel(d: string) {
 
 const TimetableGeneratorForm = ({
   initialValue,
+  classOptions,
+  subjectOptions,
   teachers,
   loadingTeachers,
   generating,
   onGenerate,
 }: {
   initialValue: GeneratorFormValue;
+  classOptions: string[];
+  subjectOptions: string[];
   teachers: Teacher[];
   loadingTeachers: boolean;
   generating: boolean;
@@ -104,7 +108,11 @@ const TimetableGeneratorForm = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label>Class</Label>
-          <ClassSelect value={value.classId} onChange={(v) => setValue((p) => ({ ...p, classId: v }))} />
+          <ClassSelect
+            value={value.classId}
+            onChange={(v) => setValue((p) => ({ ...p, classId: v }))}
+            options={classOptions}
+          />
         </div>
 
         <div className="space-y-2">
@@ -170,6 +178,7 @@ const TimetableGeneratorForm = ({
             onChange={(next) => updateSubject(idx, next)}
             onRemove={() => removeSubject(idx)}
             teachers={teachers}
+            subjectOptions={subjectOptions}
             disabled={generating || loadingTeachers}
           />
         ))}

@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import TeacherSelect from "@/components/timetable/TeacherSelect";
+import SubjectSelect from "@/components/timetable/SubjectSelect";
+import { Input } from "@/components/ui/input";
 
 export type SubjectTeacherRow = {
   name: string;
@@ -23,12 +24,14 @@ const SubjectTeacherInput = ({
   onChange,
   onRemove,
   teachers,
+  subjectOptions,
   disabled,
 }: {
   value: SubjectTeacherRow;
   onChange: (next: SubjectTeacherRow) => void;
   onRemove: () => void;
   teachers: Teacher[];
+  subjectOptions: string[];
   disabled: boolean;
 }) => {
   return (
@@ -36,11 +39,10 @@ const SubjectTeacherInput = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-2">
           <Label>Subject</Label>
-          <Input
+          <SubjectSelect
             value={value.name}
-            onChange={(e) => onChange({ ...value, name: e.target.value })}
-            placeholder="Math"
-            disabled={disabled}
+            onChange={(v) => onChange({ ...value, name: v })}
+            options={subjectOptions}
           />
         </div>
 

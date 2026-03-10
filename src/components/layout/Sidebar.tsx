@@ -11,6 +11,7 @@ import {
   ClipboardList, 
   Calendar,
   Sparkles,
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar as SidebarComponent,
@@ -31,6 +32,9 @@ const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Students", url: "/students", icon: Users },
   { title: "Teachers", url: "/teachers", icon: GraduationCap },
+  { title: "Classes", url: "/classes", icon: BookOpen },
+  { title: "Subjects", url: "/subjects", icon: BookOpen },
+  { title: "Reports", url: "/reports", icon: FileText },
   { title: "Exam Results", url: "/results", icon: ClipboardList },
   { title: "Timetable", url: "/timetable", icon: Calendar },
   { title: "AI Timetable Generator", url: "/timetable/generator", icon: Sparkles },

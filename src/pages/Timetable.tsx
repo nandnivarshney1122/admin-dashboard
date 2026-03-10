@@ -33,11 +33,29 @@ type Teacher = {
 
 const DEFAULT_PERIODS = 8;
 
+type ClassItem = {
+  _id: string;
+  name: string;
+  section: string;
+};
+
+type SubjectItem = {
+  _id: string;
+  name: string;
+};
+
+function classDisplay(c: Pick<ClassItem, "name" | "section">) {
+  return `${c.name}-${c.section}`;
+}
+
 const Timetable = () => {
   const [classId, setClassId] = useState<string>("10-A");
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [classOptions, setClassOptions] = useState<string[]>([]);
+  const [subjectOptions, setSubjectOptions] = useState<string[]>([]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState<GridCellKey | null>(null);
@@ -56,6 +74,32 @@ const Timetable = () => {
     }
     return m;
   }, [entries]);
+
+  async function loadClassesAndSubjects() {
+    try {
+      const [classesRes, subjectsRes] = await Promise.all([
+        apiRequest<any>("/api/classes"),
+        apiRequest<any>("/api/subjects"),
+      ]);
+
+      const classes: ClassItem[] = Array.isArray(classesRes?.data) ? classesRes.data : [];
+      const subjects: SubjectItem[] = Array.isArray(subjectsRes?.data) ? subjectsRes.data : [];
+
+      const cls = classes.map(classDisplay).filter(Boolean);
+      const subs = subjects.map((s) => String(s.name || "").trim()).filter(Boolean);
+
+      setClassOptions(cls);
+      setSubjectOptions(subs);
+
+      if (!cls.includes(classId) && cls.length > 0) {
+        setClassId(cls[0]);
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to load classes/subjects");
+      setClassOptions([]);
+      setSubjectOptions([]);
+    }
+  }
 
   async function loadTeachers() {
     try {
@@ -83,6 +127,7 @@ const Timetable = () => {
 
   useEffect(() => {
     loadTeachers();
+    loadClassesAndSubjects();
   }, []);
 
   useEffect(() => {
@@ -191,7 +236,7 @@ const Timetable = () => {
         <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle>Weekly Timetable</CardTitle>
           <div className="w-full sm:w-64">
-            <ClassSelect value={classId} onChange={setClassId} />
+            <ClassSelect value={classId} onChange={setClassId} options={classOptions} />
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -218,6 +263,7 @@ const Timetable = () => {
           selectedKey ? `${selectedKey.day} - Period ${selectedKey.period}` : "Timetable Entry"
         }
         teachers={teachers}
+        subjectOptions={subjectOptions}
         initialValue={initialForm}
         onSave={handleSave}
         onDelete={selectedExisting?._id ? handleDelete : undefined}

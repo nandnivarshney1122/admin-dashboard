@@ -40,6 +40,9 @@ const AITimetableGenerator = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loadingTeachers, setLoadingTeachers] = useState(true);
 
+  const [classOptions, setClassOptions] = useState<string[]>([]);
+  const [subjectOptions, setSubjectOptions] = useState<string[]>([]);
+
   const [generating, setGenerating] = useState(false);
   const [generated, setGenerated] = useState<TimetableEntry[]>([]);
 
@@ -65,7 +68,39 @@ const AITimetableGenerator = () => {
       }
     }
 
+    async function loadClassesAndSubjects() {
+      try {
+        const [classesRes, subjectsRes] = await Promise.all([
+          apiRequest<any>("/api/classes"),
+          apiRequest<any>("/api/subjects"),
+        ]);
+
+        const classes = Array.isArray(classesRes?.data) ? classesRes.data : [];
+        const subjects = Array.isArray(subjectsRes?.data) ? subjectsRes.data : [];
+
+        const cls = classes
+          .map((c: any) => `${String(c?.name || "").trim()}-${String(c?.section || "").trim()}`)
+          .filter((v: string) => v && v !== "-");
+
+        const subs = subjects
+          .map((s: any) => String(s?.name || "").trim())
+          .filter(Boolean);
+
+        if (mounted) {
+          setClassOptions(cls);
+          setSubjectOptions(subs);
+        }
+      } catch (e: any) {
+        toast.error(e?.message || "Failed to load classes/subjects");
+        if (mounted) {
+          setClassOptions([]);
+          setSubjectOptions([]);
+        }
+      }
+    }
+
     loadTeachers();
+    loadClassesAndSubjects();
     return () => {
       mounted = false;
     };
@@ -100,12 +135,12 @@ const AITimetableGenerator = () => {
   }
 
   const initialForm: GeneratorFormValue = {
-    classId: "10-A",
+    classId: classOptions[0] || "10-A",
     days: DEFAULT_DAYS,
     periodsPerDay: 6,
     subjects: [
-      { name: "Math", teacherId: "", weeklyHours: 5, room: "" },
-      { name: "English", teacherId: "", weeklyHours: 4, room: "" },
+      { name: subjectOptions[0] || "", teacherId: "", weeklyHours: 5, room: "" },
+      { name: subjectOptions[1] || "", teacherId: "", weeklyHours: 4, room: "" },
     ],
   };
 
@@ -125,6 +160,8 @@ const AITimetableGenerator = () => {
         <CardContent>
           <TimetableGeneratorForm
             initialValue={initialForm}
+            classOptions={classOptions.length > 0 ? classOptions : ["10-A", "10-B", "9-A", "9-B", "8-A", "8-B"]}
+            subjectOptions={subjectOptions}
             teachers={teachers}
             loadingTeachers={loadingTeachers}
             generating={generating}

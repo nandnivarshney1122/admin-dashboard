@@ -34,6 +34,7 @@ const TimetableForm = ({
   onOpenChange,
   title,
   teachers,
+  subjectOptions,
   initialValue,
   onSave,
   onDelete,
@@ -43,6 +44,7 @@ const TimetableForm = ({
   onOpenChange: (open: boolean) => void;
   title: string;
   teachers: Teacher[];
+  subjectOptions: string[];
   initialValue: TimetableFormValue;
   onSave: (value: TimetableFormValue) => Promise<void>;
   onDelete?: () => Promise<void>;
@@ -69,6 +71,7 @@ const TimetableForm = ({
             <SubjectSelect
               value={value.subject}
               onChange={(v) => setValue((p) => ({ ...p, subject: v }))}
+              options={subjectOptions}
             />
           </div>
 
